@@ -1,6 +1,8 @@
 # FirebaseDeskWeatherStation
 Connect Temperature/Humidity sensor to Firebase using ESP32
 
+![Weather Station](https://github.com/ayushchinmay/FirebaseDeskWeatherStation/blob/main/readme_ref/weather-station.jpg)
+
 ## Software Requirements
 * Arduino IDE
 * Web Browser
