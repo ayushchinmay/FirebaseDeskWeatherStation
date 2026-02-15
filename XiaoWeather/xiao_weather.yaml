@@ -14,8 +14,8 @@ esp32:
 
 # WiFi Configuration
 wifi:
-  ssid: "YushNet Lux 2.4G"
-  password: "1337x@Ayush6901"
+  ssid: "WIFI_SSID"
+  password: "WIFI_PASSWORD"
 
   # Fallback hotspot in case WiFi connection fails
   ap:
@@ -117,3 +117,4 @@ light:
 button:
   - platform: restart
     name: "Restart"
+
