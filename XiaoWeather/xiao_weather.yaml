@@ -1,0 +1,119 @@
+# ESPHome Configuration for Xiao Weather Station
+# Device: Seeed XIAO ESP32-C3 with BME280 + SSD1306 OLED
+# Author: Ayush Chinmay
+# Date: 02 February 2026
+
+esphome:
+  name: xiao-weather
+  friendly_name: "Desktop Station Weather"
+
+esp32:
+  board: seeed_xiao_esp32c3
+  framework:
+    type: arduino
+
+# WiFi Configuration
+wifi:
+  ssid: "YushNet Lux 2.4G"
+  password: "1337x@Ayush6901"
+
+  # Fallback hotspot in case WiFi connection fails
+  ap:
+    ssid: "Xiao-Weather Fallback"
+    password: "fallback123"
+
+# Enable captive portal for fallback AP
+captive_portal:
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API (native integration - more reliable than MQTT)
+api:
+  # Home Assistant will auto-negotiate encryption
+  # For manual key, uncomment and set:
+  # encryption:
+  #   key: "YOUR_32_BYTE_BASE64_KEY_HERE"
+
+# Enable OTA updates
+ota:
+  - platform: esphome
+    password: "xiaow3ather"
+
+# I2C Bus Configuration (XIAO ESP32-C3 default pins)
+i2c:
+  sda: GPIO6
+  scl: GPIO7
+  scan: true
+  frequency: 400kHz
+
+# BME280 Sensor Configuration
+sensor:
+  - platform: bme280_i2c
+    address: 0x76
+    update_interval: 10s
+
+    temperature:
+      name: "Temperature"
+      id: bme_temperature
+      oversampling: 2x
+
+    humidity:
+      name: "Humidity"
+      id: bme_humidity
+      oversampling: 16x
+
+    pressure:
+      name: "Pressure"
+      id: bme_pressure
+      oversampling: 1x
+
+  # WiFi Signal Strength (useful for debugging)
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+
+# SSD1306 OLED Display (128x64, I2C)
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3C
+    rotation: 270  # Equivalent to setRotation(3) - portrait mode
+    update_interval: 2s
+    lambda: |-
+      // Display humidity
+      it.printf(0, 0, id(small_font), "Humid:");
+      it.printf(0, 10, id(large_font), "%.1f%%", id(bme_humidity).state);
+
+      // Display temperature
+      it.printf(0, 35, id(small_font), "Temp:");
+      it.printf(0, 45, id(large_font), "%.1fC", id(bme_temperature).state);
+
+      // Display pressure
+      it.printf(0, 70, id(small_font), "Press:");
+      it.printf(0, 80, id(large_font), "%.0f", id(bme_pressure).state);
+      it.printf(0, 100, id(small_font), "hPa");
+
+# Fonts for display
+font:
+  - file: "gfonts://Roboto"
+    id: small_font
+    size: 10
+
+  - file: "gfonts://Roboto"
+    id: large_font
+    size: 16
+
+# Built-in LED (optional status indicator)
+light:
+  - platform: status_led
+    name: "Status LED"
+    pin:
+      number: GPIO10
+      inverted: true
+
+# Restart button (exposed to Home Assistant)
+button:
+  - platform: restart
+    name: "Restart"
